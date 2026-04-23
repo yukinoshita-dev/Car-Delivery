@@ -1,0 +1,72 @@
+<h2>認証フロー設計</h2>
+<p class="subtitle">ダミー認証 × JWT × Zustand 永続化 × middleware ルートガード</p>
+
+<div class="section">
+  <h3>ログインフロー</h3>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+    <div style="display:flex;align-items:flex-start;gap:12px;background:#0f172a;border-radius:6px;padding:12px;">
+      <div style="min-width:28px;height:28px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.85em;color:white;flex-shrink:0;">1</div>
+      <div style="font-size:0.85em;color:#9ca3af;line-height:1.7;">
+        <strong style="color:#e2e8f0;">/login</strong> でメール入力<br>
+        <code style="color:#86efac;">admin@demo.com</code> または <code style="color:#86efac;">user@demo.com</code> を入力してログインボタン押下
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px;background:#0f172a;border-radius:6px;padding:12px;">
+      <div style="min-width:28px;height:28px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.85em;color:white;flex-shrink:0;">2</div>
+      <div style="font-size:0.85em;color:#9ca3af;line-height:1.7;">
+        <strong style="color:#e2e8f0;">POST /api/v1/auth/login</strong> をコール<br>
+        FastAPI がメールアドレスでロール判定 → JWTトークンを発行して返す
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px;background:#0f172a;border-radius:6px;padding:12px;">
+      <div style="min-width:28px;height:28px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.85em;color:white;flex-shrink:0;">3</div>
+      <div style="font-size:0.85em;color:#9ca3af;line-height:1.7;">
+        <strong style="color:#e2e8f0;">Zustand store に保存</strong><br>
+        <code style="color:#f9a8d4;">token</code> / <code style="color:#f9a8d4;">email</code> / <code style="color:#f9a8d4;">role</code> を store に保存 → <code style="color:#86efac;">localStorage</code> に永続化（リロード後も維持）
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px;background:#0f172a;border-radius:6px;padding:12px;">
+      <div style="min-width:28px;height:28px;background:#22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.85em;color:white;flex-shrink:0;">4</div>
+      <div style="font-size:0.85em;color:#9ca3af;line-height:1.7;">
+        <strong style="color:#e2e8f0;">/dashboard にリダイレクト</strong><br>
+        ロールによって admin / user の表示を切り替え
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>ルートガード（middleware.ts）</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+    <div style="background:#0f172a;border:1px solid #f87171;border-radius:6px;padding:12px;font-size:0.83em;color:#9ca3af;line-height:1.8;">
+      <div style="color:#f87171;font-weight:bold;margin-bottom:6px;">🚫 未ログイン状態で /dashboard にアクセス</div>
+      middleware が token の有無を確認<br>
+      → なければ <strong style="color:#e2e8f0;">/login にリダイレクト</strong>
+    </div>
+    <div style="background:#0f172a;border:1px solid #22c55e;border-radius:6px;padding:12px;font-size:0.83em;color:#9ca3af;line-height:1.8;">
+      <div style="color:#86efac;font-weight:bold;margin-bottom:6px;">✅ ログイン済みで /login にアクセス</div>
+      middleware が token を確認<br>
+      → あれば <strong style="color:#e2e8f0;">/dashboard にリダイレクト</strong>
+    </div>
+  </div>
+  <div style="background:#0f172a;border:1px solid #fbbf24;border-radius:6px;padding:12px;font-size:0.83em;color:#9ca3af;line-height:1.8;margin-top:10px;">
+    <div style="color:#fbbf24;font-weight:bold;margin-bottom:6px;">🔒 admin 専用ページへ user でアクセス</div>
+    middleware または各ページで role を確認 → <strong style="color:#e2e8f0;">/dashboard にリダイレクト（権限なし）</strong>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Zustand Auth Store の構造</h3>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;font-family:monospace;font-size:0.8em;line-height:1.9;color:#9ca3af;">
+    <span style="color:#60a5fa;">interface</span> <span style="color:#86efac;">AuthState</span> {<br>
+    &nbsp;&nbsp;token: <span style="color:#f9a8d4;">string | null</span><br>
+    &nbsp;&nbsp;email: <span style="color:#f9a8d4;">string | null</span><br>
+    &nbsp;&nbsp;role: <span style="color:#f9a8d4;">'admin' | 'user' | null</span><br>
+    &nbsp;&nbsp;login: (token, email, role) => <span style="color:#f9a8d4;">void</span><br>
+    &nbsp;&nbsp;logout: () => <span style="color:#f9a8d4;">void</span><br>
+    &nbsp;&nbsp;isAdmin: () => <span style="color:#f9a8d4;">boolean</span><br>
+    }
+  </div>
+</div>
+
+<p style="text-align:center;color:#6b7280;font-size:0.85em;margin-top:20px;">OKなら次は実装順序・フェーズ設計へ</p>
