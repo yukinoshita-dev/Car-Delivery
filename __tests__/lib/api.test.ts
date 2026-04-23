@@ -3,9 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // Zustand store のモック
 vi.mock('@/features/auth/store', () => ({
   useAuthStore: {
-    getState: () => ({ token: 'test-token-123' }),
+    getState: vi.fn(() => ({ token: 'test-token-123' })),
   },
 }))
+
+import { apiClient } from '@/lib/api'
 
 const mockFetch = vi.fn()
 global.fetch = mockFetch
@@ -21,7 +23,6 @@ describe('apiClient', () => {
       json: async () => ({ data: 'ok' }),
     })
 
-    const { apiClient } = await import('@/lib/api')
     await apiClient.get('/cars')
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -40,7 +41,6 @@ describe('apiClient', () => {
       json: async () => ({ id: 1 }),
     })
 
-    const { apiClient } = await import('@/lib/api')
     await apiClient.post('/cars', { name: 'プリウス1号' })
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -63,7 +63,22 @@ describe('apiClient', () => {
       json: async () => ({ detail: 'Unauthorized' }),
     })
 
-    const { apiClient } = await import('@/lib/api')
-    await expect(apiClient.get('/cars')).rejects.toThrow()
+    await expect(apiClient.get('/cars')).rejects.toThrow('Unauthorized')
+  })
+
+  it('token が null のとき Authorization ヘッダーを付与しない', async () => {
+    const { useAuthStore } = await import('@/features/auth/store')
+    vi.mocked(useAuthStore.getState).mockReturnValueOnce({ token: null } as any)
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    })
+
+    await apiClient.get('/cars')
+
+    const callArgs = mockFetch.mock.calls[0][1] as RequestInit
+    const headers = callArgs.headers as Record<string, string>
+    expect(headers.Authorization).toBeUndefined()
   })
 })

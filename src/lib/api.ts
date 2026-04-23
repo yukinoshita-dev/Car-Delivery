@@ -11,11 +11,19 @@ function getHeaders(): Record<string, string> {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const { headers: initHeaders, ...restInit } = init
+  const extraHeaders: Record<string, string> =
+    initHeaders instanceof Headers
+      ? Object.fromEntries(initHeaders.entries())
+      : Array.isArray(initHeaders)
+      ? Object.fromEntries(initHeaders)
+      : (initHeaders as Record<string, string> | undefined) ?? {}
+
   const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
+    ...restInit,
     headers: {
       ...getHeaders(),
-      ...(init.headers as Record<string, string> | undefined),
+      ...extraHeaders,
     },
   })
   if (!res.ok) {
