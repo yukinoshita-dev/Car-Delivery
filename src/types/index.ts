@@ -11,6 +11,12 @@ export interface Car {
   total_mileage: number
 }
 
+export interface User {
+  id: number
+  email: string
+  role: Role
+}
+
 export type ReservationStatus = 'pending' | 'approved' | 'in_progress' | 'completed' | 'cancelled'
 
 export interface Reservation {
@@ -26,12 +32,6 @@ export interface Reservation {
   status: ReservationStatus
   mileage_driven: number | null
   created_at: string
-}
-
-export interface User {
-  id: number
-  email: string
-  role: Role
 }
 
 export interface LoginRequest {
@@ -51,11 +51,13 @@ export interface DashboardToday {
   reservations: Reservation[]
 }
 
+export interface CarStat {
+  car_id: number
+  car_name: string
+  reservation_count: number
+  total_mileage: number
+}
+
 export interface DashboardStats {
-  car_stats: {
-    car_id: number
-    car_name: string
-    reservation_count: number
-    total_mileage: number
-  }[]
+  car_stats: CarStat[]
 }
