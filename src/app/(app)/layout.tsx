@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
+import { AppShell } from '@/components/layout/AppShell'
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  return <div className="min-h-screen">{children}</div>
+  return <AppShell>{children}</AppShell>
 }
