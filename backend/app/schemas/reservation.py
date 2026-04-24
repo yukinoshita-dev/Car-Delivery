@@ -38,3 +38,34 @@ class ReservationOut(BaseModel):
     created_at: datetime.datetime
 
     model_config = {"from_attributes": True}
+
+
+class TodayReservationOut(BaseModel):
+    id: int
+    car_id: int
+    car_name: str
+    user_id: int
+    user_name: str
+    user_email: str
+    destination: str
+    purpose: Optional[str]
+    start_datetime: datetime.datetime
+    end_datetime: datetime.datetime
+    status: ReservationStatus
+
+
+class ReservationDetail(BaseModel):
+    id: int
+    user_id: int
+    car_id: int
+    car_name: str
+    user_name: str
+    user_email: str
+    destination: str
+    purpose: Optional[str]
+    start_datetime: datetime.datetime
+    end_datetime: datetime.datetime
+    status: ReservationStatus
+    mileage_used: float
+    note: Optional[str]
+    created_at: datetime.datetime
