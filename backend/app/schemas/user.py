@@ -20,3 +20,16 @@ class UserOut(BaseModel):
     created_at: datetime.datetime
 
     model_config = {"from_attributes": True}
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    role: UserRole = UserRole.user
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    role: str
+    email: str
