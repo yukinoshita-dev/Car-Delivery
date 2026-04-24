@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload
+from typing import List
 from app.core.database import get_db
 from app.models.reservation import Reservation, ReservationStatus
 from app.models.car import Car
+from app.schemas.reservation import TodayReservationOut
 import datetime
 
 router = APIRouter()
 
 
-@router.get("/today")
+@router.get("/today", response_model=List[TodayReservationOut])
 def get_today_schedule(db: Session = Depends(get_db)):
     today = datetime.date.today()
     start = datetime.datetime.combine(today, datetime.time.min)
@@ -17,28 +18,29 @@ def get_today_schedule(db: Session = Depends(get_db)):
 
     reservations = (
         db.query(Reservation)
+        .options(joinedload(Reservation.car), joinedload(Reservation.user))
         .filter(
             Reservation.start_datetime <= end,
             Reservation.end_datetime >= start,
-            Reservation.status.in_([
-                ReservationStatus.approved,
-                ReservationStatus.in_progress,
-            ]),
+            Reservation.status.in_([ReservationStatus.approved, ReservationStatus.in_progress]),
         )
         .all()
     )
 
     return [
-        {
-            "id": r.id,
-            "user_id": r.user_id,
-            "car_id": r.car_id,
-            "destination": r.destination,
-            "purpose": r.purpose,
-            "start_datetime": r.start_datetime,
-            "end_datetime": r.end_datetime,
-            "status": r.status,
-        }
+        TodayReservationOut(
+            id=r.id,
+            car_id=r.car_id,
+            car_name=r.car.name,
+            user_id=r.user_id,
+            user_name=r.user.name,
+            user_email=r.user.email,
+            destination=r.destination,
+            purpose=r.purpose,
+            start_datetime=r.start_datetime,
+            end_datetime=r.end_datetime,
+            status=r.status,
+        )
         for r in reservations
     ]
 
@@ -50,9 +52,11 @@ def get_stats(db: Session = Depends(get_db)):
 
     today = datetime.date.today()
     month_start = today.replace(day=1)
-    month_end = (month_start.replace(month=month_start.month % 12 + 1, day=1)
-                 if month_start.month < 12
-                 else month_start.replace(year=month_start.year + 1, month=1, day=1))
+    month_end = (
+        month_start.replace(month=month_start.month % 12 + 1, day=1)
+        if month_start.month < 12
+        else month_start.replace(year=month_start.year + 1, month=1, day=1)
+    )
 
     completed_this_month = db.query(Reservation).filter(
         Reservation.status == ReservationStatus.completed,
