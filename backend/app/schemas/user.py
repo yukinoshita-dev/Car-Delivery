@@ -23,7 +23,7 @@ class UserOut(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
     role: UserRole = UserRole.user
 
@@ -31,5 +31,5 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str
-    role: str
+    role: UserRole
     email: str
