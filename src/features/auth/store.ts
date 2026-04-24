@@ -18,7 +18,12 @@ export const useAuthStore = create<AuthState>()(
       email: null,
       role: null,
       login: (token, email, role) => set({ token, email, role }),
-      logout: () => set({ token: null, email: null, role: null }),
+      logout: () => {
+        set({ token: null, email: null, role: null })
+        if (typeof document !== 'undefined') {
+          document.cookie = 'token=; path=/; max-age=0'
+        }
+      },
       isAdmin: () => get().role === 'admin',
     }),
     {
