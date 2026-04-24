@@ -47,17 +47,41 @@ export interface LoginResponse {
   email: string
 }
 
-export interface DashboardToday {
-  reservations: Reservation[]
-}
-
-export interface CarStat {
+export interface TodayReservation {
+  id: number
   car_id: number
   car_name: string
-  reservation_count: number
-  total_mileage: number
+  user_id: number
+  user_name: string
+  user_email: string
+  destination: string
+  purpose: string | null
+  start_datetime: string
+  end_datetime: string
+  status: ReservationStatus
+}
+
+export interface ReservationDetail {
+  id: number
+  user_id: number
+  car_id: number
+  car_name: string
+  user_name: string
+  user_email: string
+  destination: string
+  purpose: string | null
+  start_datetime: string
+  end_datetime: string
+  status: ReservationStatus
+  mileage_used: number
+  note: string | null
+  created_at: string
 }
 
 export interface DashboardStats {
-  car_stats: CarStat[]
+  total_cars: number
+  available_cars: number
+  in_use_cars: number
+  completed_reservations_this_month: number
+  pending_approvals: number
 }
