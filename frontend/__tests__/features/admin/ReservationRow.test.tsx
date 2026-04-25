@@ -9,6 +9,10 @@ vi.mock('@/features/dashboard/hooks/useApproveReservation', () => ({
   useApproveReservation: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }))
 
+vi.mock('@/features/admin/hooks/useUpdateReservationStatus', () => ({
+  useUpdateReservationStatus: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+}))
+
 function wrapper({ children }: { children: React.ReactNode }) {
   const qc = new QueryClient()
   return createElement(QueryClientProvider, { client: qc }, children)
@@ -28,9 +32,22 @@ describe('ReservationRow', () => {
     expect(screen.getByRole('button', { name: '却下' })).toBeInTheDocument()
   })
 
-  it('approved の予約 → ボタンが表示されない', () => {
+  it('approved の予約 → 承認・却下ボタンが表示されず、進行中ボタンが表示される', () => {
     render(<ReservationRow reservation={{ ...base, status: 'approved' }} />, { wrapper })
     expect(screen.queryByRole('button', { name: '承認' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '却下' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '進行中に変更' })).toBeInTheDocument()
+  })
+
+  it('in_progress の予約 → 完了にするボタンが表示される', () => {
+    render(<ReservationRow reservation={{ ...base, status: 'in_progress' }} />, { wrapper })
+    expect(screen.getByRole('button', { name: '完了にする' })).toBeInTheDocument()
+  })
+
+  it('completed の予約 → アクションボタンが表示されない', () => {
+    render(<ReservationRow reservation={{ ...base, status: 'completed' }} />, { wrapper })
+    expect(screen.queryByRole('button', { name: '承認' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '進行中に変更' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '完了にする' })).not.toBeInTheDocument()
   })
 })
