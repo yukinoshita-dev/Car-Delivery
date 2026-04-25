@@ -1,11 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from app.models.car import Car
+from app.models.reservation import Reservation, ReservationStatus
 from app.schemas import car as car_schema
+import datetime
 
 router = APIRouter()
+
+
+@router.get("/available", response_model=List[car_schema.CarOut])
+def list_available_cars(
+    start: datetime.datetime = Query(...),
+    end: datetime.datetime = Query(...),
+    db: Session = Depends(get_db),
+):
+    conflicting_car_ids = (
+        db.query(Reservation.car_id)
+        .filter(
+            Reservation.status.in_([
+                ReservationStatus.pending,
+                ReservationStatus.approved,
+                ReservationStatus.in_progress,
+            ]),
+            Reservation.start_datetime < end,
+            Reservation.end_datetime > start,
+        )
+        .subquery()
+    )
+    return (
+        db.query(Car)
+        .filter(Car.id.notin_(conflicting_car_ids))
+        .all()
+    )
 
 
 @router.get("/", response_model=List[car_schema.CarOut])

@@ -83,12 +83,19 @@ def get_reservation(reservation_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=reservation_schema.ReservationOut, status_code=201)
-def create_reservation(reservation_in: reservation_schema.ReservationCreate, db: Session = Depends(get_db)):
+def create_reservation(
+    reservation_in: reservation_schema.ReservationCreate,
+    email: str = Depends(get_current_email),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
     if reservation_in.end_datetime <= reservation_in.start_datetime:
         raise HTTPException(status_code=400, detail="end_datetime must be after start_datetime")
     if _has_overlap(db, reservation_in.car_id, reservation_in.start_datetime, reservation_in.end_datetime):
         raise HTTPException(status_code=409, detail="The car is already reserved for this time slot")
-    reservation = Reservation(**reservation_in.model_dump())
+    reservation = Reservation(**reservation_in.model_dump(), user_id=user.id)
     db.add(reservation)
     db.commit()
     db.refresh(reservation)

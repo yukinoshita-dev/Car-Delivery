@@ -5,7 +5,6 @@ import datetime
 
 
 class ReservationCreate(BaseModel):
-    user_id: int
     car_id: int
     destination: str
     purpose: Optional[str] = None
