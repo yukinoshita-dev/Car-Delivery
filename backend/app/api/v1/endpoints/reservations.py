@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from app.core.database import get_db
 from app.models.reservation import Reservation, ReservationStatus
+from app.models.car import Car
 from app.models.user import User
 from app.schemas import reservation as reservation_schema
 from app.services.auth_service import get_current_email
@@ -115,8 +116,21 @@ def update_reservation(reservation_id: int, reservation_in: reservation_schema.R
             raise HTTPException(status_code=400, detail="end_datetime must be after start_datetime")
         if _has_overlap(db, r.car_id, start, end, exclude_id=reservation_id):
             raise HTTPException(status_code=409, detail="The car is already reserved for this time slot")
+    new_status = update_data.get("status")
+    transitioning_to_completed = (
+        new_status == ReservationStatus.completed
+        and r.status != ReservationStatus.completed
+    )
+
     for field, value in update_data.items():
         setattr(r, field, value)
+
+    if transitioning_to_completed:
+        mileage_val = r.mileage_used or 0
+        car = db.query(Car).filter(Car.id == r.car_id).first()
+        if car and mileage_val > 0:
+            car.total_mileage = (car.total_mileage or 0) + mileage_val
+
     db.commit()
     db.refresh(r)
     return r
