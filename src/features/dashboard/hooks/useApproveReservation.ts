@@ -10,6 +10,7 @@ export function useApproveReservation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-approvals'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['all-reservations'] })
     },
   })
 }
