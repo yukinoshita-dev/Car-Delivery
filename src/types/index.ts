@@ -105,3 +105,17 @@ export interface ReservationCreateRequest {
   purpose: string
   note?: string
 }
+
+export interface CarCreate {
+  name: string
+  plate_number: string
+  model?: string
+  capacity?: number
+}
+
+export interface CarUpdate {
+  name?: string
+  model?: string
+  capacity?: number
+  is_available?: boolean
+}
