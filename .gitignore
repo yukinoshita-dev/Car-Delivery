@@ -5,6 +5,14 @@ frontend/.env
 frontend/.env.local
 frontend/.env.development
 frontend/.env.production
+frontend/.env*
+frontend/coverage/
+frontend/out/
+frontend/build/
+frontend/.vercel
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+frontend/package-lock.json
 
 # Backend
 backend/venv/
@@ -17,7 +25,6 @@ backend/*.pyc
 
 # Root level
 node_modules/
-package-lock.json
 
 # General
 .DS_Store
