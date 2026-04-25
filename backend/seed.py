@@ -75,7 +75,7 @@ def seed():
         ]
         db.add_all(reservations)
         db.commit()
-        print("✅ Seed data created successfully")
+        print("[OK] Seed data created successfully")
         print(f"   Users : admin@demo.com / user@demo.com (password: demo)")
         print(f"   Cars  : {car1.name}, {car2.name}")
         print(f"   Reservations: {len(reservations)} created")
