@@ -24,6 +24,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
 
@@ -31,11 +32,40 @@ export function LoginForm() {
     mutate({ ...data, role })
   }
 
+  function fillDemo(demoRole: Role) {
+    const email = demoRole === 'admin' ? 'admin@demo.com' : 'user@demo.com'
+    setValue('email', email)
+    setValue('password', 'demo')
+    setRole(demoRole)
+  }
+
   return (
     <div className="w-full max-w-md space-y-4">
       {/* デモ告知バナー */}
       <div className="rounded-md bg-yellow-50 border border-yellow-300 px-4 py-3 text-sm text-yellow-800">
-        これはポートフォリオ用のデモシステムです。任意のメアド・パスワードでログインできます。
+        これはポートフォリオ用のデモシステムです。下のボタンでデモアカウントを自動入力できます。
+      </div>
+
+      {/* デモアカウント自動入力 */}
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="flex-1 text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+          onClick={() => fillDemo('user')}
+        >
+          一般社員でデモ
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="flex-1 text-xs border-purple-200 text-purple-700 hover:bg-purple-50"
+          onClick={() => fillDemo('admin')}
+        >
+          管理者でデモ
+        </Button>
       </div>
 
       <Card>
