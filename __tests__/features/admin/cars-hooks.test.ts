@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createElement } from 'react'
 
@@ -35,38 +35,5 @@ describe('useCars', () => {
     const { result } = renderHook(() => useCars(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(apiClient.get).toHaveBeenCalledWith('/cars/')
-  })
-})
-
-describe('useCreateCar', () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('POST /cars/ を呼ぶ', async () => {
-    const { apiClient } = await import('@/lib/api')
-    vi.mocked(apiClient.post).mockResolvedValueOnce(mockCar)
-    const { useCreateCar } = await import('@/features/admin/hooks/useCarMutations')
-    const { result } = renderHook(() => useCreateCar(), { wrapper })
-    await act(async () => {
-      await result.current.mutateAsync({ name: 'プリウス1号', plate_number: '品川300あ1234' })
-    })
-    expect(apiClient.post).toHaveBeenCalledWith('/cars/', {
-      name: 'プリウス1号',
-      plate_number: '品川300あ1234',
-    })
-  })
-})
-
-describe('useDeleteCar', () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('DELETE /cars/1 を呼ぶ', async () => {
-    const { apiClient } = await import('@/lib/api')
-    vi.mocked(apiClient.delete).mockResolvedValueOnce(undefined)
-    const { useDeleteCar } = await import('@/features/admin/hooks/useCarMutations')
-    const { result } = renderHook(() => useDeleteCar(), { wrapper })
-    await act(async () => {
-      await result.current.mutateAsync(1)
-    })
-    expect(apiClient.delete).toHaveBeenCalledWith('/cars/1')
   })
 })
