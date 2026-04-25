@@ -85,3 +85,23 @@ export interface DashboardStats {
   completed_reservations_this_month: number
   pending_approvals: number
 }
+
+export interface CarOut {
+  id: number
+  name: string
+  plate_number: string
+  model: string | null
+  capacity: number
+  is_available: boolean
+  total_mileage: number
+  created_at: string
+}
+
+export interface ReservationCreateRequest {
+  car_id: number
+  start_datetime: string
+  end_datetime: string
+  destination: string
+  purpose: string
+  note?: string
+}
