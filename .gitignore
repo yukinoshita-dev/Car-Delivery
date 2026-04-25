@@ -18,3 +18,10 @@ backend/*.pyc
 # General
 .DS_Store
 *.log
+CLAUDE.md
+spec.md
+Tasks.md
+handover.md
+.superpowers/*
+.claude/*
+docs/
