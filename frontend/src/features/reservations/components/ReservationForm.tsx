@@ -17,7 +17,7 @@ const schema = z
   .object({
     start_datetime: z.string().min(1, '開始日時を入力してください'),
     end_datetime: z.string().min(1, '終了日時を入力してください'),
-    car_id: z.number({ required_error: '車両を選択してください', invalid_type_error: '車両を選択してください' }),
+    car_id: z.number({ error: '車両を選択してください' }),
     destination: z.string().min(1, '行先を入力してください'),
     purpose: z.string().min(1, '目的を入力してください'),
     note: z.string().optional(),

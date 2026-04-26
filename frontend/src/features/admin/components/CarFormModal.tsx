@@ -11,14 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useCreateCar, useUpdateCar } from '@/features/admin/hooks/useCarMutations'
 import type { CarOut } from '@/types'
 
-const capacityField = z.preprocess(
-  (val) => (val === '' || val == null ? undefined : Number(val)),
-  z
-    .number({ error: '数値を入力してください' })
-    .int()
-    .positive('正の整数を入力してください')
-    .optional()
-)
+const capacityField = z
+  .number({ error: '数値を入力してください' })
+  .int()
+  .positive('正の整数を入力してください')
+  .optional()
 
 const createSchema = z.object({
   name: z.string().min(1, '車両名を入力してください'),
@@ -62,7 +59,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
       </div>
       <div className="space-y-1">
         <Label htmlFor="capacity">定員（任意）</Label>
-        <Input id="capacity" {...register('capacity')} type="number" min={1} placeholder="5" />
+        <Input id="capacity" {...register('capacity', { setValueAs: (v) => (v === '' || v == null ? undefined : Number(v)) })} type="number" min={1} placeholder="5" />
         {errors.capacity && <p className="text-sm text-red-500">{errors.capacity.message}</p>}
       </div>
       <Button type="submit" className="w-full" disabled={isPending}>
@@ -110,7 +107,7 @@ function EditForm({ car, onClose }: { car: CarOut; onClose: () => void }) {
       </div>
       <div className="space-y-1">
         <Label htmlFor="capacity">定員（任意）</Label>
-        <Input id="capacity" {...register('capacity')} type="number" min={1} />
+        <Input id="capacity" {...register('capacity', { setValueAs: (v) => (v === '' || v == null ? undefined : Number(v)) })} type="number" min={1} />
         {errors.capacity && <p className="text-sm text-red-500">{errors.capacity.message}</p>}
       </div>
       <div className="flex items-center gap-2">
