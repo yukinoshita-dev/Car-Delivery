@@ -23,6 +23,8 @@ backend/.env
 backend/.env.local
 backend/.env.production
 backend/*.pyc
+backend/lambda_package/
+backend/lambda_deploy.zip
 
 # Root level
 node_modules/
