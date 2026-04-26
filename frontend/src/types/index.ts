@@ -75,6 +75,7 @@ export interface ReservationDetail {
   status: ReservationStatus
   mileage_used: number
   note: string | null
+  rejection_reason: string | null
   created_at: string
 }
 

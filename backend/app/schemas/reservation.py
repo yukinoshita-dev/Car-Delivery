@@ -21,6 +21,7 @@ class ReservationUpdate(BaseModel):
     status: Optional[ReservationStatus] = None
     mileage_used: Optional[float] = None
     note: Optional[str] = None
+    rejection_reason: Optional[str] = None
 
 
 class ReservationOut(BaseModel):
@@ -34,6 +35,7 @@ class ReservationOut(BaseModel):
     status: ReservationStatus
     mileage_used: float
     note: Optional[str]
+    rejection_reason: Optional[str]
     created_at: datetime.datetime
 
     model_config = {"from_attributes": True}
@@ -67,4 +69,5 @@ class ReservationDetail(BaseModel):
     status: ReservationStatus
     mileage_used: float
     note: Optional[str]
+    rejection_reason: Optional[str]
     created_at: datetime.datetime

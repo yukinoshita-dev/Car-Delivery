@@ -39,6 +39,7 @@ def _to_detail(r: Reservation) -> reservation_schema.ReservationDetail:
         status=r.status,
         mileage_used=r.mileage_used,
         note=r.note,
+        rejection_reason=r.rejection_reason,
         created_at=r.created_at,
     )
 

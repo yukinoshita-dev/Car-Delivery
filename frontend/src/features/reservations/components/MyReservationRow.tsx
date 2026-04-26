@@ -25,6 +25,9 @@ export function MyReservationRow({ reservation: r }: { reservation: ReservationD
       </p>
       {r.purpose && <p className="text-gray-500">目的: {r.purpose}</p>}
       {r.mileage_used > 0 && <p className="text-gray-400">走行距離: {r.mileage_used} km</p>}
+      {r.rejection_reason && (
+        <p className="text-red-500 text-xs bg-red-50 px-2 py-1 rounded">却下理由: {r.rejection_reason}</p>
+      )}
     </div>
   )
 }

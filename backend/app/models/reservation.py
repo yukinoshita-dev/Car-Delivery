@@ -26,6 +26,7 @@ class Reservation(Base):
     status = Column(Enum(ReservationStatus), default=ReservationStatus.pending)
     mileage_used = Column(Float, default=0.0)
     note = Column(String)
+    rejection_reason = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="reservations")
