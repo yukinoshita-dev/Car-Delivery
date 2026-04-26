@@ -5,6 +5,7 @@ applications:
       phases:
         preBuild:
           commands:
+            - rm -f package-lock.json
             - npm install
         build:
           commands:
