@@ -6,6 +6,7 @@ from app.models.reservation import Reservation, ReservationStatus
 from app.models.car import Car
 from app.schemas.reservation import TodayReservationOut
 import datetime
+import calendar
 
 router = APIRouter()
 
@@ -75,3 +76,41 @@ def get_stats(db: Session = Depends(get_db)):
         "completed_reservations_this_month": completed_this_month,
         "pending_approvals": pending_count,
     }
+
+
+@router.get("/monthly")
+def get_monthly_stats(db: Session = Depends(get_db)):
+    today = datetime.date.today()
+    result = []
+    for i in range(5, -1, -1):
+        month = today.month - i
+        year = today.year
+        while month <= 0:
+            month += 12
+            year -= 1
+        _, last_day = calendar.monthrange(year, month)
+        start = datetime.datetime(year, month, 1)
+        end = datetime.datetime(year, month, last_day, 23, 59, 59)
+        count = db.query(Reservation).filter(
+            Reservation.start_datetime >= start,
+            Reservation.start_datetime <= end,
+        ).count()
+        result.append({"month": f"{year}/{month:02d}", "count": count})
+    return result
+
+
+@router.get("/car-usage")
+def get_car_usage(db: Session = Depends(get_db)):
+    cars = db.query(Car).all()
+    result = []
+    for car in cars:
+        count = db.query(Reservation).filter(
+            Reservation.car_id == car.id,
+            Reservation.status.in_([
+                ReservationStatus.approved,
+                ReservationStatus.in_progress,
+                ReservationStatus.completed,
+            ]),
+        ).count()
+        result.append({"car": car.name, "count": count})
+    return sorted(result, key=lambda x: x["count"], reverse=True)
