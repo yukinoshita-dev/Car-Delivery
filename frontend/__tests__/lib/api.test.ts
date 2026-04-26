@@ -68,7 +68,7 @@ describe('apiClient', () => {
 
   it('token が null のとき Authorization ヘッダーを付与しない', async () => {
     const { useAuthStore } = await import('@/features/auth/store')
-    vi.mocked(useAuthStore.getState).mockReturnValueOnce({ token: null } as any)
+    vi.mocked(useAuthStore.getState).mockReturnValueOnce({ token: null } as unknown as ReturnType<typeof useAuthStore.getState>)
 
     mockFetch.mockResolvedValueOnce({
       ok: true,

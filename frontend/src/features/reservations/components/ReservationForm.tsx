@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -38,12 +38,11 @@ export function ReservationForm() {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
 
-  const startDatetime = watch('start_datetime')
-  const endDatetime = watch('end_datetime')
+  const startDatetime = useWatch({ control, name: 'start_datetime' })
+  const endDatetime = useWatch({ control, name: 'end_datetime' })
   const { data: availableCars, isLoading: carsLoading } = useAvailableCars(
     startDatetime || null,
     endDatetime || null

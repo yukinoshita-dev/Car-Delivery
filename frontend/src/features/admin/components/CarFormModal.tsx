@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -76,7 +76,7 @@ function EditForm({ car, onClose }: { car: CarOut; onClose: () => void }) {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
   } = useForm<EditValues>({
     resolver: zodResolver(editSchema),
     defaultValues: {
@@ -113,7 +113,7 @@ function EditForm({ car, onClose }: { car: CarOut; onClose: () => void }) {
       <div className="flex items-center gap-2">
         <Checkbox
           id="is_available"
-          checked={watch('is_available') ?? car.is_available}
+          checked={useWatch({ control, name: 'is_available' }) ?? car.is_available}
           onCheckedChange={(checked) => setValue('is_available', !!checked)}
         />
         <Label htmlFor="is_available">利用可能</Label>
