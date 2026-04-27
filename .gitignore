@@ -28,6 +28,7 @@ backend/lambda_deploy.zip
 
 # Root level
 node_modules/
+package-lock.json
 
 # General
 .DS_Store

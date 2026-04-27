@@ -8,8 +8,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6 bg-micro-pattern">
+          <div className="relative z-10">
+            {children}
+          </div>
         </main>
       </div>
     </div>
