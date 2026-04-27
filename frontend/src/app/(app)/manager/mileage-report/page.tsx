@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { apiClient } from '@/lib/api'
-import { Plus, Trash2, Download, Save, Check } from 'lucide-react'
+import { Download, Save, Check } from 'lucide-react'
 
 interface ReportRow {
   user_id: number
@@ -22,29 +22,18 @@ interface ReportResponse {
   report: ReportRow[]
 }
 
-interface Threshold {
-  km: string
-  amount: string
-}
-
 interface ThresholdOut {
   id: number
   km: number
   amount: number
 }
 
-function buildThresholdParam(thresholds: Threshold[]): string {
-  return thresholds
-    .filter((t) => t.km && t.amount)
-    .map((t) => `${t.km}:${t.amount}`)
-    .join(',')
-}
-
 export default function MileageReportPage() {
   const today = new Date()
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth() + 1)
-  const [thresholds, setThresholds] = useState<Threshold[]>([{ km: '', amount: '' }])
+  const [km, setKm] = useState('')
+  const [amount, setAmount] = useState('')
   const [report, setReport] = useState<ReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,31 +43,19 @@ export default function MileageReportPage() {
   useEffect(() => {
     apiClient.get<ThresholdOut[]>('/mileage-report/thresholds').then((data) => {
       if (data.length > 0) {
-        setThresholds(data.map((t) => ({ km: String(t.km), amount: String(t.amount) })))
+        setKm(String(data[0].km))
+        setAmount(String(data[0].amount))
+        setSaved(true)
       }
     }).catch(() => {})
   }, [])
 
-  const addThreshold = () => {
-    setThresholds((prev) => [...prev, { km: '', amount: '' }])
-    setSaved(false)
-  }
-  const removeThreshold = (i: number) => {
-    setThresholds((prev) => prev.filter((_, idx) => idx !== i))
-    setSaved(false)
-  }
-  const updateThreshold = (i: number, key: 'km' | 'amount', value: string) => {
-    setThresholds((prev) => prev.map((t, idx) => (idx === i ? { ...t, [key]: value } : t)))
-    setSaved(false)
-  }
-
-  const saveThresholds = async () => {
+  const saveThreshold = async () => {
     setSaving(true)
+    setError(null)
     try {
-      const valid = thresholds
-        .filter((t) => t.km && t.amount)
-        .map((t) => ({ km: parseFloat(t.km), amount: parseFloat(t.amount) }))
-      await apiClient.put('/mileage-report/thresholds', valid)
+      const payload = km && amount ? [{ km: parseFloat(km), amount: parseFloat(amount) }] : []
+      await apiClient.put('/mileage-report/thresholds', payload)
       setSaved(true)
     } catch {
       setError('しきい値の保存に失敗しました')
@@ -91,7 +68,7 @@ export default function MileageReportPage() {
     setLoading(true)
     setError(null)
     try {
-      const tp = buildThresholdParam(thresholds)
+      const tp = km && amount ? `${km}:${amount}` : ''
       const url = `/mileage-report/monthly?year=${year}&month=${month}${tp ? `&thresholds=${tp}` : ''}`
       const data = await apiClient.get<ReportResponse>(url)
       setReport(data)
@@ -104,7 +81,7 @@ export default function MileageReportPage() {
 
   const downloadCsv = () => {
     const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1'
-    const tp = buildThresholdParam(thresholds)
+    const tp = km && amount ? `${km}:${amount}` : ''
     const url = `${base}/mileage-report/monthly/csv?year=${year}&month=${month}${tp ? `&thresholds=${tp}` : ''}`
     window.open(url, '_blank')
   }
@@ -146,13 +123,13 @@ export default function MileageReportPage() {
               <div>
                 <Label>手当しきい値</Label>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  走行距離が指定km以上の場合に金額を手当として付与。複数設定可能（最大条件を適用）
+                  指定km以上を走行した場合に手当を付与します
                 </p>
               </div>
               <Button
                 size="sm"
                 variant={saved ? 'outline' : 'default'}
-                onClick={saveThresholds}
+                onClick={saveThreshold}
                 disabled={saving}
                 className={saved ? 'text-green-600 border-green-300' : ''}
               >
@@ -169,35 +146,24 @@ export default function MileageReportPage() {
                 )}
               </Button>
             </div>
-            {thresholds.map((t, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  placeholder="距離 (km)"
-                  value={t.km}
-                  onChange={(e) => updateThreshold(i, 'km', e.target.value)}
-                  className="w-32"
-                />
-                <span className="text-sm text-gray-500">km 以上 →</span>
-                <Input
-                  type="number"
-                  placeholder="手当 (円)"
-                  value={t.amount}
-                  onChange={(e) => updateThreshold(i, 'amount', e.target.value)}
-                  className="w-32"
-                />
-                <span className="text-sm text-gray-500">円</span>
-                {thresholds.length > 1 && (
-                  <button onClick={() => removeThreshold(i)} className="text-red-400 hover:text-red-600">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            ))}
-            <Button size="sm" variant="outline" onClick={addThreshold}>
-              <Plus className="h-4 w-4 mr-1" />
-              しきい値を追加
-            </Button>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                placeholder="距離 (km)"
+                value={km}
+                onChange={(e) => { setKm(e.target.value); setSaved(false) }}
+                className="w-32"
+              />
+              <span className="text-sm text-gray-500">km 以上 →</span>
+              <Input
+                type="number"
+                placeholder="手当 (円)"
+                value={amount}
+                onChange={(e) => { setAmount(e.target.value); setSaved(false) }}
+                className="w-32"
+              />
+              <span className="text-sm text-gray-500">円</span>
+            </div>
           </div>
 
           <div className="flex gap-2">
