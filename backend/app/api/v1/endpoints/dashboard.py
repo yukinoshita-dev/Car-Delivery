@@ -99,6 +99,45 @@ def get_monthly_stats(db: Session = Depends(get_db)):
     return result
 
 
+@router.get("/availability")
+def get_date_availability(
+    date: str,
+    db: Session = Depends(get_db),
+):
+    try:
+        target = datetime.date.fromisoformat(date)
+    except ValueError:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="日付の形式が正しくありません（YYYY-MM-DD）")
+
+    day_start = datetime.datetime.combine(target, datetime.time.min)
+    day_end = datetime.datetime.combine(target, datetime.time.max)
+
+    total_cars = db.query(Car).filter(Car.is_available == True).count()
+
+    reserved_car_ids = (
+        db.query(Reservation.car_id)
+        .filter(
+            Reservation.status.in_([
+                ReservationStatus.pending,
+                ReservationStatus.approved,
+                ReservationStatus.in_progress,
+            ]),
+            Reservation.start_datetime <= day_end,
+            Reservation.end_datetime >= day_start,
+        )
+        .distinct()
+        .count()
+    )
+
+    return {
+        "date": date,
+        "total_cars": total_cars,
+        "reserved_count": reserved_car_ids,
+        "available_count": max(0, total_cars - reserved_car_ids),
+    }
+
+
 @router.get("/car-usage")
 def get_car_usage(db: Session = Depends(get_db)):
     cars = db.query(Car).all()

@@ -6,6 +6,7 @@ import { MyReservationsCard } from '@/features/dashboard/components/MyReservatio
 import { PendingApprovalsCard } from '@/features/dashboard/components/PendingApprovalsCard'
 import { MonthlyChart } from '@/features/dashboard/components/MonthlyChart'
 import { CarUsageChart } from '@/features/dashboard/components/CarUsageChart'
+import { AvailabilityChecker } from '@/features/dashboard/components/AvailabilityChecker'
 
 export default function DashboardPage() {
   const { role } = useAuthStore()
@@ -17,6 +18,7 @@ export default function DashboardPage() {
           <TodayScheduleCard />
           <PendingApprovalsCard />
         </div>
+        <AvailabilityChecker />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <MonthlyChart />
           <CarUsageChart />
@@ -28,6 +30,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <TodayScheduleCard />
+      <AvailabilityChecker />
       <MyReservationsCard />
     </div>
   )
