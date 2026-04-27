@@ -4,7 +4,7 @@ import type { UserOut } from '@/types'
 
 export interface UserUpdatePayload {
   name?: string
-  role?: 'admin' | 'user'
+  role?: 'admin' | 'user' | 'manager'
   is_active?: boolean
   password?: string
 }

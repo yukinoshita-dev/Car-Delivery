@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'user'
+export type Role = 'admin' | 'user' | 'manager'
 
 export type CarStatus = 'available' | 'in_use' | 'maintenance'
 
@@ -137,4 +137,12 @@ export interface UserCreate {
   email: string
   password: string
   role: Role
+}
+
+export interface MileageReportRow {
+  user_id: number
+  name: string
+  email: string
+  total_km: number
+  allowance: number
 }

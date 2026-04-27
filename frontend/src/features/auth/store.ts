@@ -9,6 +9,7 @@ interface AuthState {
   login: (token: string, email: string, role: Role) => void
   logout: () => void
   isAdmin: () => boolean
+  isManager: () => boolean
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -25,6 +26,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       isAdmin: () => get().role === 'admin',
+      isManager: () => get().role === 'manager',
     }),
     {
       name: 'auth-storage',

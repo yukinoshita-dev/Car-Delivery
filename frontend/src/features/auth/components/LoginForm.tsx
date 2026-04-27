@@ -70,11 +70,11 @@ export function LoginForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-center text-xl">CarDelivery ログイン</CardTitle>
+          <CardTitle className="text-center text-xl">営業車両配車システム</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* ロール選択 */}
+            {/* ロール選択（表示のみ・実際のロールはDBから取得） */}
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -83,6 +83,14 @@ export function LoginForm() {
                 onClick={() => setRole('user')}
               >
                 一般社員
+              </Button>
+              <Button
+                type="button"
+                variant={role === 'manager' ? 'default' : 'outline'}
+                className="flex-1"
+                onClick={() => setRole('manager')}
+              >
+                生産管理
               </Button>
               <Button
                 type="button"

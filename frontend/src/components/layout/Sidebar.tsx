@@ -11,6 +11,7 @@ import {
   Plus,
   Users,
   Gauge,
+  BarChart3,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/features/auth/store'
@@ -38,11 +39,16 @@ const ADMIN_NAV: NavItem[] = [
   { label: 'ユーザー管理', href: '/admin/users', icon: Users },
 ]
 
+const MANAGER_NAV: NavItem[] = [
+  { label: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
+  { label: '走行距離レポート', href: '/manager/mileage-report', icon: BarChart3 },
+]
+
 export function Sidebar() {
   const { role } = useAuthStore()
   const { collapsed, toggleSidebar } = useUIStore()
   const pathname = usePathname()
-  const navItems = role === 'admin' ? ADMIN_NAV : USER_NAV
+  const navItems = role === 'admin' ? ADMIN_NAV : role === 'manager' ? MANAGER_NAV : USER_NAV
 
   return (
     <aside

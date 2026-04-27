@@ -17,13 +17,13 @@ const createSchema = z.object({
   name: z.string().min(1, '名前を入力してください'),
   email: z.string().email('正しいメールアドレスを入力してください'),
   password: z.string().min(4, '4文字以上のパスワードを入力してください'),
-  role: z.enum(['admin', 'user']),
+  role: z.enum(['admin', 'user', 'manager']),
 })
 type CreateValues = z.infer<typeof createSchema>
 
 const editSchema = z.object({
   name: z.string().min(1, '名前を入力してください'),
-  role: z.enum(['admin', 'user']),
+  role: z.enum(['admin', 'user', 'manager']),
   is_active: z.boolean(),
   password: z.string().optional(),
 })
@@ -61,10 +61,11 @@ function CreateForm({ onClose }: { onClose: () => void }) {
       </div>
       <div className="space-y-1">
         <Label>ロール</Label>
-        <Select value={watch('role')} onValueChange={(v) => setValue('role', v as 'admin' | 'user')}>
+        <Select value={watch('role')} onValueChange={(v) => setValue('role', v as 'admin' | 'user' | 'manager')}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="user">一般社員</SelectItem>
+            <SelectItem value="manager">生産管理担当</SelectItem>
             <SelectItem value="admin">管理者</SelectItem>
           </SelectContent>
         </Select>
@@ -117,10 +118,11 @@ function EditForm({ user, onClose }: { user: UserOut; onClose: () => void }) {
       </div>
       <div className="space-y-1">
         <Label>ロール</Label>
-        <Select value={watch('role')} onValueChange={(v) => setValue('role', v as 'admin' | 'user')}>
+        <Select value={watch('role')} onValueChange={(v) => setValue('role', v as 'admin' | 'user' | 'manager')}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="user">一般社員</SelectItem>
+            <SelectItem value="manager">生産管理担当</SelectItem>
             <SelectItem value="admin">管理者</SelectItem>
           </SelectContent>
         </Select>
