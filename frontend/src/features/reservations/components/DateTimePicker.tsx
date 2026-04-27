@@ -88,6 +88,7 @@ export function DateTimePicker({ value, onChange, disabled, minDate }: DateTimeP
             mode="single"
             selected={date}
             onSelect={handleDaySelect}
+            locale={ja}
             disabled={(d) => {
               const today = new Date(new Date().setHours(0, 0, 0, 0))
               if (d < today) return true
