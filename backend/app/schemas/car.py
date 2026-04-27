@@ -11,7 +11,7 @@ class CarBase(BaseModel):
 
 
 class CarCreate(CarBase):
-    pass
+    total_mileage: Optional[int] = 0
 
 
 class CarUpdate(BaseModel):

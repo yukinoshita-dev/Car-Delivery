@@ -51,6 +51,9 @@ def get_car(car_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=car_schema.CarOut, status_code=201)
 def create_car(car_in: car_schema.CarCreate, db: Session = Depends(get_db)):
+    existing = db.query(Car).filter(Car.plate_number == car_in.plate_number).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="このナンバーは既に登録されています")
     car = Car(**car_in.model_dump())
     db.add(car)
     db.commit()

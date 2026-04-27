@@ -112,6 +112,7 @@ export interface CarCreate {
   plate_number: string
   model?: string
   capacity?: number
+  total_mileage?: number
 }
 
 export interface CarUpdate {
