@@ -1,146 +1,119 @@
-# CarDelivery - 営業車配車管理システム
+# 営業車両配車管理システム
 
-ポートフォリオ用の社用車予約・配車管理Webシステムです。
+営業部門の社用車を効率的に管理するための Web アプリケーションです。  
+予約申請から承認・使用・走行距離報告・手当算出まで、車両管理にまつわる一連の業務フローをシステム上で完結させることを目指して開発しました。
+
+**デモ：** https://main.d24dvzvq7xqdl0.amplifyapp.com
+
+---
 
 ## デモアカウント
+
+ログイン画面のボタンから資格情報を自動入力できます。
 
 | ロール | メール | パスワード |
 |--------|--------|-----------|
 | 一般社員 | user@demo.com | demo |
+| 清算担当 | manager@demo.com | demo |
 | 管理者 | admin@demo.com | demo |
+
+---
+
+## 主な機能
+
+### 一般社員
+- **予約申請** — 目的地・目的・使用日時を指定して申請。終了日時は開始日時以降のみ選択可能で、逆転入力をリアルタイムに検知
+- **週間空き状況の確認** — 今日から 7 日分の予約状況をドーナツグラフで可視化。稼働率に応じて緑→黄→橙→赤と色が変化し、満車の日は一目で判別できる。1 分ごとに自動更新
+- **予約一覧** — 申請中・承認済み・利用済みをタブで切り替え。承認済みの予約に対して却下理由の確認も可能
+- **走行距離入力** — 使用後に実際の走行距離を入力。入力欄の初期値に車両の現在の累計走行距離を表示。「使わなかった」の区分も選択可能
+
+### 管理者
+- **ダッシュボード** — 本日の利用スケジュール・承認待ち一覧・週間空き状況・月別予約グラフ・車両別利用グラフを一画面に集約
+- **予約承認 / 却下** — 一覧から承認または理由付きで却下。却下理由は申請者側にも表示
+- **車両管理** — 車両の登録・編集・累計走行距離の管理。ナンバープレートの重複は登録時に検出
+- **ユーザー管理** — ユーザーの新規登録・ロール変更・有効/無効の切り替え・パスワード変更
+
+### 清算担当
+- **月次走行距離レポート** — 年月を指定してユーザー別の走行距離を集計
+- **手当算出** — 「◯ km 以上で ◯ 円」のしきい値を画面上で設定・保存。次回ログイン時も設定を保持
+- **CSV 出力** — 集計結果を Excel 対応の CSV（UTF-8 BOM）で出力
+
+---
 
 ## 技術スタック
 
-| 役割 | 技術 |
-|------|------|
-| Frontend | Next.js 15 + React 19 + TypeScript |
-| Backend | Python 3.12 + FastAPI |
-| ORM | SQLAlchemy 2.0 + Alembic |
-| DB | PostgreSQL (ローカル / AWS RDS) |
-| 認証 | ダミーJWT認証（ポートフォリオ用） |
-| Deploy | AWS (Amplify + App Runner + RDS) |
-| スタイル | Tailwind CSS + shadcn/ui |
+### フロントエンド
 
-## ディレクトリ構成
+| 技術 | 採用理由 |
+|------|----------|
+| Next.js 15（App Router） | ファイルベースルーティングと React Server Components で高速な初期表示を実現 |
+| React 19 / TypeScript | 型安全な開発と長期的な保守性の確保 |
+| Tailwind CSS | ユーティリティクラスで一貫したデザインを高速に構築 |
+| shadcn/ui | アクセシビリティ対応済みのコンポーネント群を活用 |
+| TanStack Query | サーバー状態のキャッシュ管理・自動再取得による UX 向上 |
+| Zustand | 認証状態（トークン・ロール）の軽量なグローバル管理 |
+| react-hook-form + Zod | スキーマ駆動のフォームバリデーションで入力ミスを防止 |
 
-```
-CarDelivery/
-├── frontend/    # Next.js 15
-├── backend/     # FastAPI
-└── .github/     # GitHub Actions (CI/CD)
-```
+### バックエンド
 
-## ローカルセットアップ
+| 技術 | 採用理由 |
+|------|----------|
+| FastAPI（Python） | 型ヒントから OpenAPI ドキュメントを自動生成。高いパフォーマンス |
+| SQLAlchemy 2.0 + Alembic | ORM による安全なデータアクセスとスキーマのバージョン管理 |
+| JWT 認証 | ステートレスなトークン認証でスケールアウトに対応 |
+| Mangum | FastAPI を AWS Lambda ハンドラーとして動作させるアダプター |
 
-### Backend
+### インフラ
 
-```bash
-cd backend
-python -m venv venv
-source venv/Scripts/activate   # Windows
-pip install -r requirements.txt
-cp .env.example .env    # 環境変数を設定
-alembic upgrade head    # DBマイグレーション
-python seed.py          # デモデータ投入（初回のみ）
-uvicorn app.main:app --reload
-```
+| 技術 | 採用理由 |
+|------|----------|
+| AWS Lambda + API Gateway | サーバーレスでリクエスト数に応じた従量課金。常時稼働コスト不要 |
+| AWS Amplify | フロントエンドのホスティングと GitHub 連携による自動デプロイ |
+| Neon（サーバーレス PostgreSQL） | コネクション管理を自動化。Lambda との親和性が高くコスト効率が良い |
 
-### Frontend
+---
 
-```bash
-cd frontend
-npm install
-cp .env.example .env.local   # NEXT_PUBLIC_API_URL を設定
-npm run dev
-```
+## 設計上の工夫
 
-- ブラウザで `http://localhost:3000` を開く
-- バックエンドは `http://localhost:8000` で起動が必要
+### ロールベースのアクセス制御
+3 つのロール（一般社員 / 清算担当 / 管理者）ごとにサイドバー・ダッシュボード・操作権限を完全に分離しています。フロントエンドの表示制御だけでなく、バックエンドの API レベルでも権限チェックを行う二重構造にしています。
 
-## API ドキュメント
+### 入力ミスを防ぐ UI 設計
+予約の終了日時カレンダーは開始日時以降の日付のみ選択可能にしており、時刻についても開始日時より前の選択を非活性で防いでいます。逆転した日時が入力された場合はリアルタイムにバリデーションエラーを表示します。また走行距離の入力欄には車両の現在の累計走行距離を初期値として表示し、誤入力を減らしています。
 
-バックエンド起動後に確認できます。
+### リアルタイムの空き状況可視化
+週間の予約状況を SVG で描画したドーナツグラフで表示しています。稼働率に応じてグラフの色が段階的に変化し、満車の場合はカード全体が赤くなります。TanStack Query の `refetchInterval` を使って 1 分ごとに自動再取得するため、常に最新の状況を反映します。
 
-- Swagger UI: `http://localhost:8000/docs`
-- OpenAPI JSON: `http://localhost:8000/api/v1/openapi.json`
+### パラメータの DB 永続化
+手当しきい値は DB に保存し、ページを閉じても次回ログイン時も設定を保持します。変更後は「保存する」ボタンで明示的に保存し、保存後は「保存済み」に切り替わる状態管理を実装して誤操作を防いでいます。
 
-## AWSデプロイ
+### サーバーレスによるコスト最適化
+バックエンドは AWS Lambda で動作するため、アクセスがない時間帯の課金はゼロです。また DB には Neon のサーバーレス PostgreSQL を採用し、Lambda のコネクション問題にも対応しています。ポートフォリオ用途のデモ環境として月数百円以下での運用を実現しています。
 
-### 必要なAWSリソース
+---
 
-1. **RDS (PostgreSQL)** - データベース
-2. **ECR** - Dockerイメージレジストリ
-3. **App Runner** - バックエンドホスティング
-4. **Amplify** - フロントエンドホスティング
-
-### デプロイ手順
-
-#### 1. RDS PostgreSQL のセットアップ
-
-```bash
-# AWS コンソール または CLI で RDS インスタンスを作成
-aws rds create-db-instance \
-  --db-instance-identifier cardelivery-db \
-  --db-instance-class db.t3.micro \
-  --engine postgres \
-  --engine-version "15" \
-  --master-username postgres \
-  --master-user-password <your-password> \
-  --allocated-storage 20 \
-  --db-name cardelivery
-```
-
-#### 2. ECR リポジトリ作成
-
-```bash
-aws ecr create-repository --repository-name cardelivery-backend --region ap-northeast-1
-```
-
-#### 3. App Runner サービス作成
-
-AWS コンソール → App Runner → サービスを作成:
-- ソース: ECR イメージ
-- イメージ: `<aws-account-id>.dkr.ecr.ap-northeast-1.amazonaws.com/cardelivery-backend:latest`
-- ポート: `8000`
-- 環境変数:
-  - `SECRET_KEY`: ランダムな秘密鍵
-  - `DATABASE_URL`: `postgresql://postgres:<password>@<rds-endpoint>:5432/cardelivery`
-  - `ALLOWED_ORIGINS`: `["https://your-amplify-url.amplifyapp.com"]`
-
-#### 4. Amplify フロントエンドデプロイ
-
-```bash
-# Amplify CLI を使う場合
-amplify init
-amplify add hosting
-amplify publish
-```
-
-または AWS コンソール → Amplify → GitHubリポジトリと連携:
-- ビルド設定で `NEXT_PUBLIC_API_URL` を App Runner の URL に設定
-
-#### 5. GitHub Actions シークレット設定
+## システム構成
 
 ```
-AWS_ACCESS_KEY_ID      → IAMユーザーのアクセスキー
-AWS_SECRET_ACCESS_KEY  → IAMユーザーのシークレットキー
-AMPLIFY_APP_ID         → Amplify アプリ ID
+ブラウザ
+  └─ AWS Amplify（Next.js / 静的ホスティング）
+       └─ AWS API Gateway
+            └─ AWS Lambda（FastAPI + Mangum）
+                 └─ Neon PostgreSQL（サーバーレス）
 ```
 
-main ブランチへの push で自動デプロイが実行されます。
+---
 
-### データベースマイグレーション（本番）
+## 開発概要
 
-App Runner の「実行コマンド」またはローカルから実行:
+- 開発期間：約 2 週間（個人開発）
+- フロントエンド：TypeScript / 約 30 コンポーネント
+- バックエンド：Python / REST API 20 エンドポイント
+- DB：5 テーブル（users / cars / reservations / mileage_thresholds + Alembic バージョン管理）
 
-```bash
-DATABASE_URL=<本番RDS-URL> alembic upgrade head
-DATABASE_URL=<本番RDS-URL> python seed.py   # デモデータ投入
-```
+---
 
-## テスト
+## お問い合わせ
 
-```bash
-cd frontend
-npm run test:run   # 全テスト実行
-```
+ご興味をお持ちいただいた方はお気軽にご連絡ください。  
+同様のシステムのカスタマイズ開発・新規開発のご相談も承ります。
