@@ -20,6 +20,7 @@ class ReservationUpdate(BaseModel):
     end_datetime: Optional[datetime.datetime] = None
     status: Optional[ReservationStatus] = None
     mileage_used: Optional[float] = None
+    not_used: Optional[bool] = None
     note: Optional[str] = None
     rejection_reason: Optional[str] = None
 
@@ -34,6 +35,7 @@ class ReservationOut(BaseModel):
     end_datetime: datetime.datetime
     status: ReservationStatus
     mileage_used: float
+    not_used: bool = False
     note: Optional[str]
     rejection_reason: Optional[str]
     created_at: datetime.datetime
@@ -68,6 +70,7 @@ class ReservationDetail(BaseModel):
     end_datetime: datetime.datetime
     status: ReservationStatus
     mileage_used: float
+    not_used: bool = False
     note: Optional[str]
     rejection_reason: Optional[str]
     created_at: datetime.datetime

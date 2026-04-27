@@ -38,10 +38,35 @@ def _to_detail(r: Reservation) -> reservation_schema.ReservationDetail:
         end_datetime=r.end_datetime,
         status=r.status,
         mileage_used=r.mileage_used,
+        not_used=r.not_used or False,
         note=r.note,
         rejection_reason=r.rejection_reason,
         created_at=r.created_at,
     )
+
+
+@router.get("/pending-mileage", response_model=List[reservation_schema.ReservationDetail])
+def get_pending_mileage_reservations(
+    email: str = Depends(get_current_email),
+    db: Session = Depends(get_db),
+):
+    """走行距離の入力が必要な自分の予約一覧（予約終了日時を過ぎたapproved/in_progress）"""
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        return []
+    now = datetime.datetime.utcnow()
+    reservations = (
+        db.query(Reservation)
+        .options(joinedload(Reservation.car), joinedload(Reservation.user))
+        .filter(
+            Reservation.user_id == user.id,
+            Reservation.status.in_([ReservationStatus.approved, ReservationStatus.in_progress]),
+            Reservation.end_datetime < now,
+        )
+        .order_by(Reservation.end_datetime.desc())
+        .all()
+    )
+    return [_to_detail(r) for r in reservations]
 
 
 @router.get("/me", response_model=List[reservation_schema.ReservationDetail])

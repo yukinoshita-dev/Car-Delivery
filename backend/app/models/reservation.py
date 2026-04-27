@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Float
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Float, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 import datetime
@@ -25,6 +25,7 @@ class Reservation(Base):
     end_datetime = Column(DateTime, nullable=False)
     status = Column(Enum(ReservationStatus), default=ReservationStatus.pending)
     mileage_used = Column(Float, default=0.0)
+    not_used = Column(Boolean, default=False)
     note = Column(String)
     rejection_reason = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

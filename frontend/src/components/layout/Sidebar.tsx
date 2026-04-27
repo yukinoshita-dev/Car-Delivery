@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Plus,
   Users,
+  Gauge,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/features/auth/store'
@@ -26,6 +27,7 @@ const USER_NAV: NavItem[] = [
   { label: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
   { label: '配車予約申請', href: '/reservations/new', icon: Plus },
   { label: '自分の予約一覧', href: '/my-reservations', icon: CalendarDays },
+  { label: '走行記録入力', href: '/mileage-input', icon: Gauge },
   { label: '車両一覧', href: '/cars', icon: Car },
 ]
 
