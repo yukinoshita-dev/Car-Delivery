@@ -38,8 +38,9 @@ export function ReservationForm() {
     register,
     handleSubmit,
     control,
+    trigger,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  } = useForm<FormValues>({ resolver: zodResolver(schema), mode: 'onChange' })
 
   const startDatetime = useWatch({ control, name: 'start_datetime' })
   const endDatetime = useWatch({ control, name: 'end_datetime' })
@@ -70,7 +71,14 @@ export function ReservationForm() {
               control={control}
               defaultValue=""
               render={({ field }) => (
-                <DateTimePicker value={field.value} onChange={field.onChange} />
+                <DateTimePicker
+                  value={field.value}
+                  onChange={(v) => {
+                    field.onChange(v)
+                    // 開始日時が変わったら終了日時のバリデーションを再実行
+                    trigger('end_datetime')
+                  }}
+                />
               )}
             />
             {errors.start_datetime && (
@@ -85,7 +93,11 @@ export function ReservationForm() {
               control={control}
               defaultValue=""
               render={({ field }) => (
-                <DateTimePicker value={field.value} onChange={field.onChange} />
+                <DateTimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  minDate={startDatetime ? new Date(startDatetime) : undefined}
+                />
               )}
             />
             {errors.end_datetime && (
