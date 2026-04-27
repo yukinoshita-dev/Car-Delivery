@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CarDelivery",
-  description: "営業車配車管理システム",
+  title: "営業車両配車システム",
+  description: "営業車両配車システム",
 };
 
 export default function RootLayout({

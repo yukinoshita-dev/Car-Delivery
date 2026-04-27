@@ -45,7 +45,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
     <form onSubmit={handleSubmit((data) => mutate(data, { onSuccess: onClose }))} className="space-y-4">
       <div className="space-y-1">
         <Label htmlFor="name">車両名</Label>
-        <Input id="name" {...register('name')} placeholder="例: プリウス1号" />
+        <Input id="name" {...register('name')} placeholder="例: プリウス1号（識別用の名前）" />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
       <div className="space-y-1">
@@ -54,8 +54,8 @@ function CreateForm({ onClose }: { onClose: () => void }) {
         {errors.plate_number && <p className="text-sm text-red-500">{errors.plate_number.message}</p>}
       </div>
       <div className="space-y-1">
-        <Label htmlFor="model">車種（任意）</Label>
-        <Input id="model" {...register('model')} placeholder="例: Toyota Prius" />
+        <Label htmlFor="model">車種・型式（任意）</Label>
+        <Input id="model" {...register('model')} placeholder="例: トヨタ プリウス" />
       </div>
       <div className="space-y-1">
         <Label htmlFor="capacity">定員（任意）</Label>
@@ -102,7 +102,7 @@ function EditForm({ car, onClose }: { car: CarOut; onClose: () => void }) {
         <p className="text-sm text-gray-500 py-2 px-3 border rounded-md bg-gray-50">{car.plate_number}</p>
       </div>
       <div className="space-y-1">
-        <Label htmlFor="model">車種（任意）</Label>
+        <Label htmlFor="model">車種・型式（任意）</Label>
         <Input id="model" {...register('model')} />
       </div>
       <div className="space-y-1">

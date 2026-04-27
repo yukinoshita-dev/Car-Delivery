@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
   CalendarDays,
   Car,
-  CheckCircle,
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
@@ -32,7 +31,6 @@ const USER_NAV: NavItem[] = [
 
 const ADMIN_NAV: NavItem[] = [
   { label: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
-  { label: '承認', href: '/admin/approvals', icon: CheckCircle },
   { label: '予約管理', href: '/admin/reservations', icon: CalendarDays },
   { label: '車両管理', href: '/admin/cars', icon: Car },
   { label: 'ユーザー管理', href: '/admin/users', icon: Users },
@@ -57,7 +55,7 @@ export function Sidebar() {
         {collapsed ? (
           <Car className="h-6 w-6" />
         ) : (
-          <span className="text-lg font-bold tracking-wide">CarDelivery</span>
+          <span className="text-lg font-bold tracking-wide">営業車両配車</span>
         )}
       </div>
 
