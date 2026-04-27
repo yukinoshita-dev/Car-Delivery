@@ -6,10 +6,22 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useUsers } from '@/features/admin/hooks/useUsers'
 import { UserFormModal } from '@/features/admin/components/UserFormModal'
+import type { UserOut } from '@/types'
 
 export default function AdminUsersPage() {
   const { data: users, isLoading } = useUsers()
   const [open, setOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<UserOut | undefined>()
+
+  function openCreate() {
+    setEditTarget(undefined)
+    setOpen(true)
+  }
+
+  function openEdit(user: UserOut) {
+    setEditTarget(user)
+    setOpen(true)
+  }
 
   if (isLoading) return <p className="text-sm text-gray-400">読み込み中...</p>
 
@@ -17,7 +29,7 @@ export default function AdminUsersPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">ユーザー一覧</h1>
-        <Button size="sm" onClick={() => setOpen(true)}>
+        <Button size="sm" onClick={openCreate}>
           <Plus className="h-4 w-4 mr-1" />
           ユーザー追加
         </Button>
@@ -35,6 +47,7 @@ export default function AdminUsersPage() {
                 <th className="text-left px-4 py-3">ロール</th>
                 <th className="text-left px-4 py-3">状態</th>
                 <th className="text-left px-4 py-3">登録日</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -59,6 +72,11 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 text-gray-400">
                     {new Date(user.created_at).toLocaleDateString('ja-JP')}
                   </td>
+                  <td className="px-4 py-3">
+                    <Button size="sm" variant="outline" onClick={() => openEdit(user)}>
+                      編集
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -66,7 +84,12 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <UserFormModal open={open} onOpenChange={setOpen} />
+      <UserFormModal
+        key={editTarget?.id ?? 'new'}
+        open={open}
+        onOpenChange={setOpen}
+        user={editTarget}
+      />
     </div>
   )
 }

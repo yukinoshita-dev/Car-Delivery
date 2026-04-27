@@ -11,6 +11,13 @@ class UserCreate(BaseModel):
     role: UserRole = UserRole.user
 
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
+    password: Optional[str] = None
+
+
 class UserOut(BaseModel):
     id: int
     name: str
