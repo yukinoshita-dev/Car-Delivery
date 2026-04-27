@@ -30,6 +30,7 @@ def _to_detail(r: Reservation) -> reservation_schema.ReservationDetail:
         user_id=r.user_id,
         car_id=r.car_id,
         car_name=r.car.name,
+        car_total_mileage=r.car.total_mileage or 0,
         user_name=r.user.name,
         user_email=r.user.email,
         destination=r.destination,

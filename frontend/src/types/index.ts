@@ -66,6 +66,7 @@ export interface ReservationDetail {
   user_id: number
   car_id: number
   car_name: string
+  car_total_mileage: number
   user_name: string
   user_email: string
   destination: string

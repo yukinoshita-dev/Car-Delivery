@@ -62,6 +62,7 @@ class ReservationDetail(BaseModel):
     user_id: int
     car_id: int
     car_name: str
+    car_total_mileage: int
     user_name: str
     user_email: str
     destination: str

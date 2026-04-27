@@ -18,7 +18,7 @@ function formatDate(dt: string) {
 }
 
 function MileageRow({ r }: { r: ReservationDetail }) {
-  const [mileage, setMileage] = useState('')
+  const [mileage, setMileage] = useState(String(r.car_total_mileage))
   const [notUsed, setNotUsed] = useState(false)
   const { mutate, isPending } = useSubmitMileage()
 
@@ -50,17 +50,19 @@ function MileageRow({ r }: { r: ReservationDetail }) {
             <label htmlFor={`not-used-${r.id}`} className="text-gray-700">使わなかった</label>
           </div>
           {!notUsed && (
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min="0"
-                step="0.1"
-                placeholder="走行距離 (km)"
-                value={mileage}
-                onChange={(e) => setMileage(e.target.value)}
-                className="h-8 w-40 text-sm"
-              />
-              <span className="text-gray-500 text-xs">km</span>
+            <div className="space-y-1">
+              <p className="text-xs text-gray-400">使用後の累計走行距離を入力してください</p>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={mileage}
+                  onChange={(e) => setMileage(e.target.value)}
+                  className="h-8 w-40 text-sm"
+                />
+                <span className="text-gray-500 text-xs">km</span>
+              </div>
             </div>
           )}
           <Button
