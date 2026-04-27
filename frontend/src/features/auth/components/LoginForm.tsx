@@ -67,7 +67,7 @@ export function LoginForm() {
           className="flex-1 text-xs border-green-200 text-green-700 hover:bg-green-50"
           onClick={() => fillDemo('manager')}
         >
-          清算管理でデモ
+          清算担当でデモ
         </Button>
         <Button
           type="button"

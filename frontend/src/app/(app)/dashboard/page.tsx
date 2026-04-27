@@ -7,9 +7,18 @@ import { PendingApprovalsCard } from '@/features/dashboard/components/PendingApp
 import { MonthlyChart } from '@/features/dashboard/components/MonthlyChart'
 import { CarUsageChart } from '@/features/dashboard/components/CarUsageChart'
 import { AvailabilityChecker } from '@/features/dashboard/components/AvailabilityChecker'
+import { MonthlyMileageSummary } from '@/features/dashboard/components/MonthlyMileageSummary'
 
 export default function DashboardPage() {
   const { role } = useAuthStore()
+
+  if (role === 'manager') {
+    return (
+      <div className="space-y-6">
+        <MonthlyMileageSummary />
+      </div>
+    )
+  }
 
   if (role === 'admin') {
     return (
