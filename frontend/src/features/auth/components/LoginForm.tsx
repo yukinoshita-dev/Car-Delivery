@@ -33,7 +33,10 @@ export function LoginForm() {
   }
 
   function fillDemo(demoRole: Role) {
-    const email = demoRole === 'admin' ? 'admin@demo.com' : 'user@demo.com'
+    const email =
+      demoRole === 'admin' ? 'admin@demo.com' :
+      demoRole === 'manager' ? 'manager@demo.com' :
+      'user@demo.com'
     setValue('email', email)
     setValue('password', 'demo')
     setRole(demoRole)
@@ -56,6 +59,15 @@ export function LoginForm() {
           onClick={() => fillDemo('user')}
         >
           一般社員でデモ
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="flex-1 text-xs border-green-200 text-green-700 hover:bg-green-50"
+          onClick={() => fillDemo('manager')}
+        >
+          清算管理でデモ
         </Button>
         <Button
           type="button"
@@ -90,7 +102,7 @@ export function LoginForm() {
                 className="flex-1"
                 onClick={() => setRole('manager')}
               >
-                生産管理
+                清算担当
               </Button>
               <Button
                 type="button"

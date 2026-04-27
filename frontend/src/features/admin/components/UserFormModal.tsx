@@ -65,7 +65,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="user">一般社員</SelectItem>
-            <SelectItem value="manager">生産管理担当</SelectItem>
+            <SelectItem value="manager">清算担当</SelectItem>
             <SelectItem value="admin">管理者</SelectItem>
           </SelectContent>
         </Select>
@@ -122,7 +122,7 @@ function EditForm({ user, onClose }: { user: UserOut; onClose: () => void }) {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="user">一般社員</SelectItem>
-            <SelectItem value="manager">生産管理担当</SelectItem>
+            <SelectItem value="manager">清算担当</SelectItem>
             <SelectItem value="admin">管理者</SelectItem>
           </SelectContent>
         </Select>

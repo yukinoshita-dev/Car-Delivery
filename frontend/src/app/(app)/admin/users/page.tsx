@@ -59,7 +59,7 @@ export default function AdminUsersPage() {
                     {user.role === 'admin' ? (
                       <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100 border-0">管理者</Badge>
                     ) : user.role === 'manager' ? (
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-0">生産管理</Badge>
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-0">清算担当</Badge>
                     ) : (
                       <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0">一般</Badge>
                     )}

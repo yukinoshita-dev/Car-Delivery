@@ -22,7 +22,9 @@ def seed():
                      hashed_password=hash_password("demo"), role=UserRole.admin, is_active=True)
         user = User(name="田中太郎", email="user@demo.com",
                     hashed_password=hash_password("demo"), role=UserRole.user, is_active=True)
-        db.add_all([admin, user])
+        manager = User(name="清算担当デモ", email="manager@demo.com",
+                       hashed_password=hash_password("demo"), role=UserRole.manager, is_active=True)
+        db.add_all([admin, user, manager])
         db.flush()
 
         car1 = Car(name="プリウス1号", plate_number="品川300あ1234",
@@ -76,7 +78,7 @@ def seed():
         db.add_all(reservations)
         db.commit()
         print("[OK] Seed data created successfully")
-        print(f"   Users : admin@demo.com / user@demo.com (password: demo)")
+        print(f"   Users : admin@demo.com / user@demo.com / manager@demo.com (password: demo)")
         print(f"   Cars  : {car1.name}, {car2.name}")
         print(f"   Reservations: {len(reservations)} created")
     finally:
