@@ -6,12 +6,12 @@ import { MyReservationRow } from '@/features/reservations/components/MyReservati
 import type { ReservationStatus } from '@/types'
 
 const TABS: { label: string; value: string; status?: ReservationStatus }[] = [
-  { label: '全て',       value: 'all' },
   { label: '承認待ち',  value: 'pending',     status: 'pending' },
   { label: '承認済み',  value: 'approved',    status: 'approved' },
   { label: '使用中',    value: 'in_progress', status: 'in_progress' },
   { label: '完了',      value: 'completed',   status: 'completed' },
   { label: 'キャンセル', value: 'cancelled',  status: 'cancelled' },
+  { label: '全て',       value: 'all' },
 ]
 
 function ReservationList({ status }: { status?: ReservationStatus }) {
@@ -36,7 +36,7 @@ export default function MyReservationsPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">自分の予約一覧</h1>
-      <Tabs defaultValue="all">
+      <Tabs defaultValue="pending">
         <TabsList className="flex-wrap h-auto">
           {TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
