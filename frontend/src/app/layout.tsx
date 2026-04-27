@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "営業車両配車システム",
   description: "営業車両配車システム",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

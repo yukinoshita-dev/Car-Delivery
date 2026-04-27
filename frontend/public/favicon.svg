@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect width="100" height="100" rx="20" fill="#1e3a8a"/>
+  <g transform="translate(10, 28)">
+    <!-- car body -->
+    <rect x="5" y="20" width="70" height="22" rx="4" fill="white"/>
+    <!-- car roof -->
+    <polygon points="18,20 25,6 55,6 62,20" fill="white"/>
+    <!-- windows -->
+    <polygon points="21,18 27,8 40,8 40,18" fill="#1e3a8a"/>
+    <polygon points="41,18 41,8 53,8 59,18" fill="#1e3a8a"/>
+    <!-- wheels -->
+    <circle cx="20" cy="42" r="9" fill="#374151"/>
+    <circle cx="20" cy="42" r="4" fill="#9ca3af"/>
+    <circle cx="60" cy="42" r="9" fill="#374151"/>
+    <circle cx="60" cy="42" r="4" fill="#9ca3af"/>
+    <!-- headlight -->
+    <rect x="72" y="26" width="6" height="8" rx="2" fill="#fbbf24"/>
+  </g>
+</svg>
