@@ -3,7 +3,7 @@
 営業部門の社用車を効率的に管理するための Web アプリケーションです。  
 予約申請から承認・使用・走行距離報告・手当算出まで、車両管理にまつわる一連の業務フローをシステム上で完結させることを目指して開発しました。
 
-**デモ：** https://main.d24dvzvq7xqdl0.amplifyapp.com
+**デモ：** https://cardelivery.yu-engineer.dev/
 
 ---
 
