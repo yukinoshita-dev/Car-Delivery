@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { apiClient } from '@/lib/api'
-import { Plus, Trash2, Download } from 'lucide-react'
+import { Plus, Trash2, Download, Save, Check } from 'lucide-react'
 
 interface ReportRow {
   user_id: number
@@ -27,6 +27,12 @@ interface Threshold {
   amount: string
 }
 
+interface ThresholdOut {
+  id: number
+  km: number
+  amount: number
+}
+
 function buildThresholdParam(thresholds: Threshold[]): string {
   return thresholds
     .filter((t) => t.km && t.amount)
@@ -42,14 +48,46 @@ export default function MileageReportPage() {
   const [report, setReport] = useState<ReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  const addThreshold = () => setThresholds((prev) => [...prev, { km: '', amount: '' }])
-  const removeThreshold = (i: number) =>
+  useEffect(() => {
+    apiClient.get<ThresholdOut[]>('/mileage-report/thresholds').then((data) => {
+      if (data.length > 0) {
+        setThresholds(data.map((t) => ({ km: String(t.km), amount: String(t.amount) })))
+      }
+    }).catch(() => {})
+  }, [])
+
+  const addThreshold = () => {
+    setThresholds((prev) => [...prev, { km: '', amount: '' }])
+    setSaved(false)
+  }
+  const removeThreshold = (i: number) => {
     setThresholds((prev) => prev.filter((_, idx) => idx !== i))
-  const updateThreshold = (i: number, key: 'km' | 'amount', value: string) =>
+    setSaved(false)
+  }
+  const updateThreshold = (i: number, key: 'km' | 'amount', value: string) => {
     setThresholds((prev) => prev.map((t, idx) => (idx === i ? { ...t, [key]: value } : t)))
+    setSaved(false)
+  }
 
-  const fetch = async () => {
+  const saveThresholds = async () => {
+    setSaving(true)
+    try {
+      const valid = thresholds
+        .filter((t) => t.km && t.amount)
+        .map((t) => ({ km: parseFloat(t.km), amount: parseFloat(t.amount) }))
+      await apiClient.put('/mileage-report/thresholds', valid)
+      setSaved(true)
+    } catch {
+      setError('しきい値の保存に失敗しました')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const fetchReport = async () => {
     setLoading(true)
     setError(null)
     try {
@@ -104,8 +142,33 @@ export default function MileageReportPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>手当しきい値（任意）</Label>
-            <p className="text-xs text-gray-500">走行距離が指定km以上の場合に金額を手当として付与。複数設定可能（最大条件を適用）</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>手当しきい値</Label>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  走行距離が指定km以上の場合に金額を手当として付与。複数設定可能（最大条件を適用）
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant={saved ? 'outline' : 'default'}
+                onClick={saveThresholds}
+                disabled={saving}
+                className={saved ? 'text-green-600 border-green-300' : ''}
+              >
+                {saved ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 mr-1" />
+                    保存済み
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-3.5 w-3.5 mr-1" />
+                    {saving ? '保存中...' : '保存する'}
+                  </>
+                )}
+              </Button>
+            </div>
             {thresholds.map((t, i) => (
               <div key={i} className="flex items-center gap-2">
                 <Input
@@ -138,7 +201,7 @@ export default function MileageReportPage() {
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={fetch} disabled={loading}>
+            <Button onClick={fetchReport} disabled={loading}>
               {loading ? '集計中...' : '集計する'}
             </Button>
             {report && (

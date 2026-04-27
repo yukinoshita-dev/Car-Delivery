@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
 from app.core.database import get_db
 from app.models.reservation import Reservation, ReservationStatus
+from app.models.mileage_threshold import MileageThreshold
 from app.models.user import User
 import datetime
 import calendar
@@ -12,6 +14,34 @@ import io
 import csv
 
 router = APIRouter()
+
+
+class ThresholdIn(BaseModel):
+    km: float
+    amount: float
+
+
+class ThresholdOut(BaseModel):
+    id: int
+    km: float
+    amount: float
+
+    class Config:
+        from_attributes = True
+
+
+@router.get("/thresholds", response_model=List[ThresholdOut])
+def get_thresholds(db: Session = Depends(get_db)):
+    return db.query(MileageThreshold).order_by(MileageThreshold.km).all()
+
+
+@router.put("/thresholds", response_model=List[ThresholdOut])
+def update_thresholds(thresholds: List[ThresholdIn], db: Session = Depends(get_db)):
+    db.query(MileageThreshold).delete()
+    new_rows = [MileageThreshold(km=t.km, amount=t.amount) for t in thresholds]
+    db.add_all(new_rows)
+    db.commit()
+    return db.query(MileageThreshold).order_by(MileageThreshold.km).all()
 
 
 def _calc_allowance(total_km: float, thresholds: List[dict]) -> float:
